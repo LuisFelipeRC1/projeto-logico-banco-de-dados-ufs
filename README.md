@@ -134,6 +134,7 @@ Todas as operações são executadas através de uma aplicação desenvolvida em
 
 ---
 
+
 ## ▶️ Como Executar o Projeto
 
 1. Clonar o repositório:
@@ -147,4 +148,5 @@ Todas as operações são executadas através de uma aplicação desenvolvida em
 - Universidade Federal de Sergipe  
 - Disciplina: Banco de Dados  
 - Professor: André Britto
+- Link do GitHub: https://github.com/LuisFelipeRC1/projeto-logico-banco-de-dados-ufs
 
