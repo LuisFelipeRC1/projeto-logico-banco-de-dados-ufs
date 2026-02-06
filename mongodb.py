@@ -3,7 +3,7 @@ print("Conectando ao MongoDB...")
 from pymongo import MongoClient
 
 client = MongoClient(
-    "mongodb+srv://luisfeliperamalhoc_db_user:W7voJYZEbQ2ONRKu@mongodbteste.1nwmch7.mongodb.net/?appName=mongoDbTeste"
+    "mongodb+srv://example:user:examplehash@mongodbteste.1nwmch7.mongodb.net/?appName=mongoDbTeste"
 )
 
 db = client["trabalho_bd"]
@@ -146,3 +146,4 @@ print(read_search(search_id))
 
 delete_search(search_id)
 print("Pesquisa deletada.")
+
