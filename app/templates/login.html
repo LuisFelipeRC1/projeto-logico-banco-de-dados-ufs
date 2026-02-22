@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport para design responsivo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GeraLeads</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h2>Novo por aqui?</h2>
+            <p>Clique no botão abaixo para criar sua conta e começar a gerar leads hoje mesmo!</p>
+            <a href="/registrar"><button>SIGN UP</button></a>
+        </div>
+        <div class="right">
+            <div class="brand-logo" role="img" aria-label="Logo GeraLeads">
+                <span class="brand-dark">Gera</span><span class="brand-accent">Leads</span>
+            </div>
+            <h2>Faça login na sua conta</h2>
+            <form action="/login" method="post">
+                <input type="text" name="username" placeholder="Seu e-mail" required>
+                <input type="password" name="password" placeholder="Sua senha" required>
+                <input type="submit" value="SIGN IN">
+            </form>
+            {% if msg %}
+                <p class="flash">{{ msg }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+

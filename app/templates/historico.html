@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Histórico de Leads</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    .page { max-width: 1000px; margin: 40px auto; background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:28px; }
+    .navbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .navbar a { text-decoration:none; margin-right:12px; color:#00AEEF; font-weight:600; }
+    .table { width:100%; border-collapse:collapse; }
+    .table th, .table td { padding:12px 10px; border-bottom:1px solid #eee; text-align:left; }
+    .badge { background:linear-gradient(135deg,#00AEEF,#22D3EE); color:#fff; padding:4px 10px; border-radius:999px; font-size:12px; }
+    .actions a { text-decoration:none; font-weight:600; color:#00AEEF; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="navbar">
+      <div>
+        <span class="badge">Olá, {{ current_user.nome }}</span>
+      </div>
+      <div>
+        <a href="/home">Home</a>
+        <a href="/historico">Histórico</a>
+        {% if current_user.role == 'admin' %}<a href="/admin/usuarios">Administração</a>{% endif %}
+        <a href="/logout">Sair</a>
+      </div>
+    </div>
+
+    <h2>Histórico de Leads</h2>
+    <p style="color:#999">debug: {{ searches|length }} buscas — user_id={{ current_user.id }}</p>
+
+    <p style="margin: 8px 0 18px;">Veja suas buscas realizadas. Clique para abrir os resultados.</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Lead</th>
+          <th>Termo</th>
+          <th>Data/Hora</th>
+          {% if current_user.role == 'admin' %}<th>Usuário</th>{% endif %}
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in searches %}
+          <tr>
+            <td><strong>Lead #{{ s.id }}</strong></td>
+            <td>{{ s.query or s.term }}</td>
+            <td>
+              {% set dt = (s.started_at or s.timestamp) %}
+              {{ dt.strftime("%d/%m/%Y %H:%M") if dt else "-" }}
+            </td>
+            {% if current_user.role == 'admin' %}
+              <td>{{ s.user.nome }} &lt;{{ s.user.email }}&gt;</td>
+            {% endif %}
+            <td class="actions">
+              <a href="/historico/{{ s.id }}">Ver</a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="{% if current_user.role == 'admin' %}5{% else %}4{% endif %}">
+              <em>Nenhuma busca registrada.</em>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

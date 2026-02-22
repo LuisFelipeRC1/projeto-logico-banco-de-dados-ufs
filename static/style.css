@@ -1,0 +1,150 @@
+/* Reset básico e fontes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fundo da página */
+body {
+    background-color: #f2f6f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container principal */
+.container {
+    width: 900px;
+    height: 550px;
+    background: #fff;
+    border-radius: 15px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Lado esquerdo com o gradiente do logo */
+.left {
+    flex: 1;
+    /* --- GRADIENTE DO LOGO APLICADO AQUI --- */
+    background: linear-gradient(135deg, #00AEEF, #22D3EE); 
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.left h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.left p {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.left button {
+    padding: 12px 45px;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.left button:hover {
+    background: #fff;
+    /* Cor mais escura do gradiente para o texto no hover */
+    color: #00AEEF; 
+}
+
+/* Lado direito (formulário) */
+.right {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.brand-logo {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 25px;
+    letter-spacing: 0.2px;
+}
+
+.brand-logo .brand-dark {
+    color: #4A4A4A;
+}
+
+.brand-logo .brand-accent {
+    color: #00AEEF;
+}
+
+.right h2 {
+    /* Cor do texto "Perto" do logo */
+    color: #4A4A4A; 
+    margin-bottom: 25px;
+    font-size: 26px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    max-width: 350px;
+}
+
+form input {
+    margin: 8px 0;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+    padding-left: 20px;
+    transition: border 0.3s;
+}
+
+form input:focus {
+    /* Cor do gradiente para a borda ao focar */
+    border: 1px solid #00AEEF; 
+}
+
+form input[type="submit"] {
+    /* --- GRADIENTE DO LOGO APLICADO NO BOTÃO --- */
+    background: linear-gradient(135deg, #00AEEF, #22D3EE);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: filter 0.3s;
+}
+
+form input[type="submit"]:hover {
+    filter: brightness(1.1); /* Efeito de brilho ao passar o mouse */
+}
+
+/* Estilo para mensagens de erro/sucesso */
+.flash {
+    text-align: center;
+    color: #d93025;
+    margin-top: 15px;
+    font-weight: bold;
+}
+

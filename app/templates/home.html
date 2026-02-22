@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home - GeraLeads</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .btn-gradient{background:linear-gradient(135deg,#00AEEF,#22D3EE);transition:filter .3s}
+    .btn-gradient:hover{filter:brightness(1.1)}
+    .animate-spin{animation:spin 1s linear infinite}
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    input[type=number]{-moz-appearance:textfield;appearance:textfield}
+    #map{height:400px;border-radius:.5rem}
+    .results-table thead th{padding-top:1rem;padding-bottom:1rem}
+    .results-table tbody tr:nth-child(even){background-color:#f8fafc}
+    details[open] summary ~ ul{animation:fadeIn .25s ease-in-out}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="bg-slate-50">
+
+  <!-- NAV -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex-1 flex justify-start">
+          <a href="/home" class="font-bold text-lg">
+            <span class="text-black">Gera</span><span style="color:#22D3EE">Leads</span>
+          </a>
+        </div>
+        <div class="flex-1 text-center">
+          <div class="font-bold text-xl">
+            <span class="text-black">Gera</span><span style="color:#22D3EE">Leads</span>
+          </div>
+        </div>
+        <div class="flex-1 flex justify-end">
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-700 hidden sm:block">Olá, <strong class="font-medium text-[#4A4A4A]">{{ current_user.nome }}</strong>!</span>
+            <a href="/historico" class="text-gray-600 bg-gray-100 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">Histórico</a>
+            <a href="/logout" class="btn-gradient text-white px-4 py-2 rounded-md text-sm font-medium">Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main>
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-[#00344d] to-slate-900">
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <span class="text-white">Gera</span>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00AEEF] to-[#22D3EE]">Leads</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-cyan-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+          Encontre as melhores empresas PERTO de você!
+        </p>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
+        <form id="searchForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="sector" class="block text-sm font-medium text-gray-700 mb-2">Setor da Empresa</label>
+              <input id="sector" name="sector" type="text" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-[#00AEEF] focus:border-[#00AEEF]" placeholder="Ex: Restaurantes">
+            </div>
+            <div>
+              <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Localização</label>
+              <input id="address" name="address" type="text" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-[#00AEEF] focus:border-[#00AEEF]" placeholder="Ex: Aracaju, SE" value="Aracaju, SE">
+            </div>
+            <div>
+              <label for="radius_km" class="block text-sm font-medium text-gray-700 mb-2">Raio (km)</label>
+              <input id="radius_km" name="radius_km" type="number" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-[#00AEEF] focus:border-[#00AEEF]" placeholder="Ex: 5" value="5">
+            </div>
+            <div>
+              <label for="max_results" class="block text-sm font-medium text-gray-700 mb-2">Quantidade</label>
+              <input id="max_results" name="max_results" type="number" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-[#00AEEF] focus:border-[#00AEEF]" placeholder="Máx: 1000" value="10">
+            </div>
+          </div>
+
+          <button id="searchButton" type="submit" class="w-full btn-gradient text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center disabled:opacity-60 text-lg mt-4">
+            <svg id="searchIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <div id="spinnerIcon" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2 hidden"></div>
+            <span id="buttonText">Buscar</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="resultsSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
+      <div class="mb-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Resultados da Busca</h2>
+        <p id="results-summary" class="text-gray-600"></p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-12 items-start">
+        <div id="resultsContent" class="bg-white rounded-xl shadow-lg overflow-hidden"></div>
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Leads no Mapa</h3>
+          <div id="map" class="w-full h-96 bg-gray-200 rounded-lg shadow-inner"></div>
+        </div>
+      </div>
+
+      <div id="noResultsState" class="hidden text-center py-20"></div>
+    </div>
+
+    <div id="alertSection" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8"></div>
+  </main>
+
+  <!-- JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchForm = document.getElementById('searchForm');
+      const searchButton = document.getElementById('searchButton');
+      const alertSection = document.getElementById('alertSection');
+      const resultsSection = document.getElementById('resultsSection');
+      const resultsContent = document.getElementById('resultsContent');
+      const resultsSummary = document.getElementById('results-summary');
+
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleApiSearch();
+      });
+
+      async function handleApiSearch() {
+        setIsSearching(true);
+        clearAlert();
+        resultsSection.classList.add('hidden');
+
+        const payload = {
+          sector: document.getElementById('sector').value,
+          address: document.getElementById('address').value,
+          radius_km: parseFloat(document.getElementById('radius_km').value),
+          max_results: parseInt(document.getElementById('max_results').value, 10)
+        };
+
+        try {
+          // 1) Inicia a busca
+          const startRes = await fetch('/search/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload),
+          });
+
+          const summaryText = await startRes.text();
+          let summary = {};
+          try { summary = JSON.parse(summaryText); } catch {}
+          if (!startRes.ok) throw new Error(`start ${startRes.status}: ${summary.detail || summaryText}`);
+
+          const searchId = summary.search_id;
+          if (!searchId) throw new Error('search_id não retornado pelo backend.');
+
+          // 2) Busca resultados dessa busca
+          const r2 = await fetch(`/api/searches/${encodeURIComponent(searchId)}/results?limit=500`, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+          });
+          const body2 = await r2.text();
+          let leads = null;
+          try { leads = JSON.parse(body2); } catch {}
+          if (!r2.ok) throw new Error(`results ${r2.status}: ${body2}`);
+          if (!Array.isArray(leads)) throw new Error('A API não retornou um array de leads.');
+
+          showAlert(`Busca concluída! ${summary.inseridos ?? 0} novos leads inseridos.`, 'success');
+          displayResults(leads);
+          updateMapWithPins(leads);
+        } catch (err) {
+          console.error(err);
+          showAlert('Erro ao carregar resultados: ' + (err?.message || err), 'error');
+        } finally {
+          setIsSearching(false);
+        }
+      }
+
+      function formatOpeningHours(opening_hours){
+        if (!Array.isArray(opening_hours) || opening_hours.length===0) return '<span class="text-gray-400">—</span>';
+        const items = opening_hours.map(r => {
+          const day = (r?.day ?? '').toString();
+          const hours = (r?.hours ?? '').toString();
+          return `<li class="py-0.5">${day}: ${hours}</li>`;
+        }).join('');
+        return `
+          <details class="group">
+            <summary class="cursor-pointer text-[#00AEEF] hover:underline font-medium">Ver horários</summary>
+            <ul class="mt-2 text-gray-700 text-left bg-gray-50 rounded-lg p-2 shadow-sm inline-block">${items}</ul>
+          </details>`;
+      }
+
+      function displayResults(leads) {
+        resultsSection.classList.remove('hidden');
+        const total = Array.isArray(leads) ? leads.length : 0;
+        resultsSummary.textContent = `Exibindo ${total} leads encontrados nesta busca.`;
+
+        if (total === 0) {
+          resultsContent.innerHTML = `<p class="p-8 text-center text-gray-500">Nenhum lead encontrado.</p>`;
+          return;
+        }
+
+        const rows = leads.map(lead => `
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${lead.place_name || 'N/A'}</td>
+            <td class="px-6 py-4">${lead.address || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${lead.phone || 'N/A'}</td>
+            <td class="px-6 py-4 text-center">${(lead.rating ?? 'N/A')} (${lead.reviews_count ?? 0})</td>
+            <td class="px-6 py-4 text-center">
+              ${formatOpeningHours(lead.opening_hours)}
+            </td>
+            <td class="px-6 py-4 text-center whitespace-nowrap">
+              ${lead.website
+                ? `<a href="${lead.website}" target="_blank" class="text-[#00AEEF] hover:underline mr-3">Site</a>`
+                : `<span class="text-gray-400 mr-3">Sem site</span>`}
+              <a href="${lead.url || '#'}" target="_blank" class="text-[#00AEEF] hover:underline">Mapa</a>
+            </td>
+          </tr>
+        `).join('');
+
+        resultsContent.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 results-table">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/5">Nome do Local</th>
+                  <th class="px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">Endereço</th>
+                  <th class="px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Telefone</th>
+                  <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/12">Avaliação</th>
+                  <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Horário</th>
+                  <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200 text-sm text-gray-700">${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function setIsSearching(isSearching) {
+        searchButton.disabled = isSearching;
+        document.getElementById('searchIcon').classList.toggle('hidden', isSearching);
+        document.getElementById('spinnerIcon').classList.toggle('hidden', !isSearching);
+        document.getElementById('buttonText').textContent = isSearching ? 'Buscando...' : 'Buscar';
+      }
+
+      function showAlert(message, type='error') {
+        let bg = 'bg-red-100 border-red-400 text-red-700';
+        if (type === 'success') bg = 'bg-green-100 border-green-400 text-green-700';
+        if (type === 'info')    bg = 'bg-blue-100 border-blue-400 text-blue-700';
+        alertSection.innerHTML = `<div class="border ${bg} px-4 py-3 rounded-lg" role="alert">${message}</div>`;
+      }
+      function clearAlert(){ alertSection.innerHTML = '' }
+    });
+  </script>
+
+  <!-- MAPA -->
+  <script>
+    let map, searchCircle, geocoder, leadMarkers = [];
+
+    function initMap() {
+      const initialPos = { lat: -10.9472, lng: -37.0731 }; // fallback (Aracaju)
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13, center: initialPos, mapTypeControl:false, streetViewControl:false
+      });
+      geocoder = new google.maps.Geocoder();
+    }
+
+    function updateMapWithPins(leads) {
+      if (typeof google === 'undefined' || !map || !geocoder) {
+        return;
+      }
+      leadMarkers.forEach(m => m.setMap(null));
+      leadMarkers = [];
+      if (searchCircle) searchCircle.setMap(null);
+
+      const bounds = new google.maps.LatLngBounds();
+      const infoWindow = new google.maps.InfoWindow();
+
+      const searchAddress = document.getElementById('address').value;
+      const searchRadiusKm = parseFloat(document.getElementById('radius_km').value);
+
+      geocoder.geocode({ address: searchAddress }, (res, st) => {
+        if (st === 'OK' && res[0]) {
+          const loc = res[0].geometry.location;
+          searchCircle = new google.maps.Circle({
+            strokeColor:"#00AEEF", strokeOpacity:.8, strokeWeight:2,
+            fillColor:"#22D3EE", fillOpacity:.25, map, center:loc, radius:searchRadiusKm*1000
+          });
+          bounds.union(searchCircle.getBounds());
+        }
+
+        (Array.isArray(leads) ? leads : []).forEach(lead => {
+          const fullAddress = lead.address || '';
+          if (!fullAddress) return;
+
+          geocoder.geocode({ address: fullAddress }, (r2, st2) => {
+            if (st2 === 'OK' && r2[0]) {
+              const ll = r2[0].geometry.location;
+              const marker = new google.maps.Marker({
+                position: ll, map, title: lead.place_name || '',
+                icon: { url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' }
+              });
+
+              marker.addListener('click', () => {
+                infoWindow.setContent(`
+                  <strong>${lead.place_name || ''}</strong><br/>
+                  ${fullAddress}<br/>
+                  ${lead.phone || ''}
+                `);
+                infoWindow.open(map, marker);
+              });
+
+              leadMarkers.push(marker);
+              bounds.extend(ll);
+            }
+          });
+        });
+
+        setTimeout(() => { if (!bounds.isEmpty()) map.fitBounds(bounds); }, 1200);
+      });
+    }
+  </script>
+
+  {% if google_maps_api_key %}
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"></script>
+  {% else %}
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const mapEl = document.getElementById('map');
+        if (!mapEl) return;
+        mapEl.innerHTML = '<div class="h-full flex items-center justify-center text-sm text-gray-500">Mapa desativado: configure GOOGLE_API_KEY no .env.</div>';
+      });
+    </script>
+  {% endif %}
+</body>
+</html>

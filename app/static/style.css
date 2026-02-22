@@ -1,0 +1,177 @@
+/* Reset básico e fontes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fundo da página */
+body {
+    background-color: #f2f6f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Container principal */
+.container {
+    width: 100%;
+    max-width: 900px; /* Largura máxima em ecrãs grandes */
+    min-height: 550px;
+    background: #fff;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: row; /* Layout horizontal por defeito */
+    overflow: hidden;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Lado esquerdo com o gradiente */
+.left {
+    flex: 1;
+    background: linear-gradient(135deg, #00AEEF, #22D3EE); 
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.left h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.left p {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.left button {
+    padding: 12px 45px;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.left button:hover {
+    background: #fff;
+    color: #00AEEF;
+}
+
+/* Lado direito (formulário) */
+.right {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.brand-logo {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 25px;
+    letter-spacing: 0.2px;
+}
+
+.brand-logo .brand-dark {
+    color: #4A4A4A;
+}
+
+.brand-logo .brand-accent {
+    color: #00AEEF;
+}
+
+.right h2 {
+    color: #4A4A4A;
+    margin-bottom: 25px;
+    font-size: 26px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 350px;
+}
+
+form input {
+    margin: 8px 0;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+    padding-left: 20px;
+    transition: border 0.3s;
+}
+
+form input:focus {
+    border: 1px solid #00AEEF;
+}
+
+form input[type="submit"] {
+    background: linear-gradient(135deg, #00AEEF, #22D3EE);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: filter 0.3s;
+}
+
+form input[type="submit"]:hover {
+    filter: brightness(1.1);
+}
+
+.flash {
+    margin-top: 15px;
+    color: #d9534f;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* --- MEDIA QUERY PARA DISPOSITIVOS MÓVEIS --- */
+@media (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Alinha ao topo */
+        padding: 0;
+    }
+
+    .container {
+        flex-direction: column; /* Empilha as secções na vertical */
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+        min-height: 100vh;
+        box-shadow: none;
+    }
+
+    .left, .right {
+        flex: 1; /* Ocupam o espaço disponível */
+        padding: 30px 20px; /* Reduz o padding */
+    }
+
+    .left {
+        min-height: 250px; /* Altura mínima para a secção de boas-vindas */
+    }
+
+    form {
+        width: 100%; /* Ocupa a largura total */
+    }
+}
+

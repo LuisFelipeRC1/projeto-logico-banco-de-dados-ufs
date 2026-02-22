@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecionando...</title>
+    <!-- A meta tag de refresh foi removida -->
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f2f6f7; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #00AEEF; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="spinner"></div>
+        <p style="margin-top: 10px; color: #555;">Login bem-sucedido! A redirecionar...</p>
+    </div>
+
+    <!-- SCRIPT DE REDIRECIONAMENTO -->
+    <script>
+        // Usamos JavaScript para o redirecionamento, que é mais confiável.
+        // Adicionamos um pequeno atraso para dar tempo ao navegador de processar o cookie.
+        window.setTimeout(() => {
+            window.location.replace('/home');
+        }, 100); // 100 milissegundos de atraso
+    </script>
+</body>
+</html>
+

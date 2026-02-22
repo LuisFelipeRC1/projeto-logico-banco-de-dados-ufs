@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Histórico - GeraLeads</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .btn-gradient{background:linear-gradient(135deg,#00AEEF,#22D3EE);transition:filter .3s}
+    .btn-gradient:hover{filter:brightness(1.1)}
+    .results-table thead th{padding-top:1rem;padding-bottom:1rem}
+    .results-table tbody tr:nth-child(even){background-color:#f8fafc}
+    details[open] summary ~ ul{animation:fadeIn .25s ease-in-out}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="bg-slate-50">
+
+  <!-- NAV -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex-1 flex justify-start">
+          <a href="/home" class="font-bold text-lg">
+            <span class="text-black">Gera</span><span style="color:#22D3EE;">Leads</span>
+          </a>
+        </div>
+        <div class="flex-1 text-center">
+          <div class="font-bold text-xl">
+            <span class="text-black">Gera</span><span style="color:#22D3EE;">Leads</span>
+          </div>
+        </div>
+        <div class="flex-1 flex justify-end">
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-700 hidden sm:block">Olá, <strong class="font-medium text-[#4A4A4A]">{{ current_user.nome }}</strong>!</span>
+            <a href="/home" class="text-gray-600 bg-gray-100 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">Busca</a>
+            <a href="/historico" class="text-gray-600 bg-gray-100 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">Histórico</a>
+            <a href="/logout" class="btn-gradient text-white px-4 py-2 rounded-md text-sm font-medium">Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- CARTÃO DO LEAD -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <h2 class="text-2xl font-bold text-gray-900">
+          Lead #{{ search.id }} — “{{ search.query or search.term }}”
+        </h2>
+        <a href="/historico" class="text-[#00AEEF] hover:underline text-sm">Voltar ao histórico</a>
+      </div>
+      <div class="mt-3 grid grid-cols-1 md:grid-cols-4 gap-3 text-sm text-gray-700">
+        {% set started = (search.started_at or search.timestamp) %}
+        <div><span class="font-medium">Iniciado:</span> {{ started.strftime("%d/%m/%Y %H:%M") if started else "-" }}</div>
+        <div><span class="font-medium">Finalizado:</span> {{ search.finished_at.strftime("%d/%m/%Y %H:%M") if search.finished_at else "-" }}</div>
+        <div><span class="font-medium">Resultados:</span> {{ search.results_count or results|length }}</div>
+        {% if current_user.role == 'admin' %}
+          <div class="md:col-span-4">
+            <span class="font-medium">Usuário:</span> {{ search.user.nome }} &lt;{{ search.user.email }}&gt;
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTEÚDO -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center mb-6">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Histórico de Leads</h1>
+      <p class="text-gray-600">Veja e exporte os resultados desta busca.</p>
+    </div>
+
+    <!-- Exportação -->
+    <div class="my-8 p-6 bg-white rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-center gap-4">
+      <label for="export-format" class="font-medium text-gray-700">Exportar como:</label>
+      <select id="export-format" class="rounded-md border-gray-300 shadow-sm focus:border-[#00AEEF] focus:ring focus:ring-[#00AEEF] focus:ring-opacity-50">
+        <option value="csv">CSV (planilha)</option>
+        <option value="xlsx">XLSX (Excel)</option>
+        <option value="pdf">PDF (documento)</option>
+      </select>
+      <button id="export-button" class="btn-gradient text-white font-bold py-2 px-6 rounded-md">
+        Exportar
+      </button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 results-table">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 text-left  text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/5">Nome do Local</th>
+              <th class="px-6 text-left  text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">Endereço</th>
+              <th class="px-6 text-left  text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Telefone</th>
+              <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/12">Avaliação</th>
+              <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Horário</th>
+              <th class="px-6 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody class="bg-white divide-y divide-gray-200 text-sm text-gray-700">
+            {% for lead in results %}
+            <tr class="hover:bg-gray-50 transition">
+              <!-- Nome -->
+              <td class="px-6 py-4 font-medium text-gray-900">
+                {{ lead.place_name or 'N/A' }}
+              </td>
+
+              <!-- Endereço -->
+              <td class="px-6 py-4">
+                {{ lead.address or 'N/A' }}
+              </td>
+
+              <!-- Telefone -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ lead.phone or 'N/A' }}
+              </td>
+
+              <!-- Avaliação -->
+              <td class="px-6 py-4 text-center">
+                {{ (lead.rating if lead.rating is not none else 'N/A') }} ({{ lead.reviews_count or 0 }})
+              </td>
+
+              <!-- Horário -->
+              <td class="px-6 py-4 text-center">
+                {% set oh = lead.opening_hours %}
+                {% if oh %}
+                  <details class="group inline-block text-left">
+                    <summary class="cursor-pointer text-[#00AEEF] hover:underline font-medium">Ver horários</summary>
+                    <ul class="mt-2 text-gray-700 bg-gray-50 rounded-lg p-2 shadow-sm inline-block">
+                      {% if 'compress_hours' in environment.filters %}
+                        {% for line in oh|compress_hours %}
+                          <li class="py-0.5">{{ line }}</li>
+                        {% endfor %}
+                      {% else %}
+                        {% for row in oh %}
+                          <li class="py-0.5">
+                            {% if row.day is defined %}{{ row.day }}:{% endif %}
+                            {% if row.hours is defined %} {{ row.hours }}{% else %} {{ row }}{% endif %}
+                          </li>
+                        {% endfor %}
+                      {% endif %}
+                    </ul>
+                  </details>
+                {% else %}
+                  <span class="text-gray-400">—</span>
+                {% endif %}
+              </td>
+
+              <!-- Ações -->
+              <td class="px-6 py-4 text-center whitespace-nowrap">
+                {% if lead.website %}
+                  <a href="{{ lead.website }}" target="_blank" class="text-[#00AEEF] hover:underline mr-3">Site</a>
+                {% else %}
+                  <span class="text-gray-400 mr-3">Sem site</span>
+                {% endif %}
+                <a href="{{ lead.url or '#' }}" target="_blank" class="text-[#00AEEF] hover:underline">Mapa</a>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                Nenhum resultado encontrado para esta busca.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Exporta especificamente o detalhe desta busca
+    document.getElementById('export-button').addEventListener('click', () => {
+      const format = document.getElementById('export-format').value;
+      window.location.href = `/export/{{ search.id }}?format=${encodeURIComponent(format)}`;
+    });
+  </script>
+</body>
+</html>
